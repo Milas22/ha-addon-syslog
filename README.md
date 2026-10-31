@@ -1,4 +1,8 @@
-# Syslog Home Assistant AddOn
+# Syslog Home Assistant AddOn (redact fork)
+
+> **This is a fork** of [mib1185/ha-addon-syslog](https://github.com/mib1185/ha-addon-syslog) with one addition: the `redact_patterns` option masks secrets (tokens, secret URL paths) in log messages before they are sent, see [Redacting secrets](syslog/DOCS.md#redacting-secrets). The change is proposed upstream; if it is merged there, please use the original. There are no pre-built images, the Supervisor builds the app locally on installation.
+>
+> Add this repository with the URL `https://github.com/Milas22/ha-addon-syslog#fork`.
 
 ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield]
 
