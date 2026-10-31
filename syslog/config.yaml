@@ -1,5 +1,5 @@
 name: "Syslog"
-version: "0.5.2"
+version: "0.6.0"
 slug: "syslog"
 description: "Send your HAOS logs to a remote syslog server"
 url: "https://github.com/mib1185/ha-addon-syslog"
@@ -20,6 +20,7 @@ options:
   syslog_ssl: false
   syslog_ssl_verify: true
   syslog_format: rfc3164
+  redact_patterns: []
 schema:
   syslog_host: str
   syslog_port: int
@@ -27,3 +28,5 @@ schema:
   syslog_ssl: bool
   syslog_ssl_verify: bool
   syslog_format: list(rfc3164|rfc5424)
+  redact_patterns:
+    - str

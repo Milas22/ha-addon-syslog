@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+- Add option to redact secrets from messages before they are sent
+
 ## 0.5.2
 
 - Rename add-on to app

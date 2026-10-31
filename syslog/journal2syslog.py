@@ -17,6 +17,13 @@ SYSLOG_SSL = True if environ["SYSLOG_SSL"] == "true" else False
 SYSLOG_SSL_VERIFY = True if environ["SYSLOG_SSL_VERIFY"] == "true" else False
 SYSLOG_FORMAT = str(environ.get("SYSLOG_FORMAT", "rfc3164")).lower()
 HAOS_HOSTNAME = str(environ["HAOS_HOSTNAME"])
+# one regular expression per line, an invalid one stops the app instead of sending unmasked messages
+REDACT_PATTERNS = [
+    re.compile(pattern)
+    for pattern in str(environ.get("REDACT_PATTERNS", "")).splitlines()
+    if pattern
+]
+REDACT_REPLACEMENT = "***"
 
 LOGGING_NAME_TO_LEVEL_MAPPING = logging.getLevelNamesMapping()
 LOGGING_JOURNAL_PRIORITY_TO_LEVEL_MAPPING = [
@@ -216,6 +223,13 @@ def normalize_field(value: str | bytes | list | None) -> str:
     return str(value)
 
 
+def redact(message: str) -> str:
+    """Replace every match of the configured redact patterns"""
+    for pattern in REDACT_PATTERNS:
+        message = pattern.sub(REDACT_REPLACEMENT, message)
+    return message
+
+
 # start journal reader and seek to end of journal
 jr = journal.Reader(path="/var/log/journal")
 jr.seek_tail()
@@ -268,6 +282,9 @@ while True:
         # remove shell colors from container messages
         if container_name:
             msg = re.sub(r"\x1b\[\d+m", "", msg)
+
+        # mask secrets before the message leaves the host
+        msg = redact(msg)
 
         # determine syslog level
         if not container_name:

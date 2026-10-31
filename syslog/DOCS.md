@@ -15,6 +15,7 @@ syslog_protocol: udp
 syslog_ssl: false
 syslog_ssl_verfify: false
 syslog_format: rfc3164
+redact_patterns: []
 ```
 
 | key | name | description |
@@ -25,6 +26,19 @@ syslog_format: rfc3164
 | `syslog_ssl` | SSL encryption | Whether or not to to use ssl encryption (only supported with tcp). |
 | `syslog_ssl_verfify` | SSL verify | Whether or not to verify ssl certificate. |
 | `syslog_format` | Syslog format | The syslog message format, either `rfc3164` (BSD syslog) or `rfc5424` (ISO 8601 timestamps, structured data header). |
+| `redact_patterns` | Redact patterns | Regular expressions (Python syntax) whose matches are replaced by `***` before a message is sent. |
+
+### Redacting secrets
+
+Some apps write credentials into their logs, for example a secret URL path in every access log line. Once such a line is sent, it is stored on the remote syslog server and travels the network in clear text with UDP or TCP without TLS. `redact_patterns` masks these values on the Home Assistant host, before the message leaves it:
+
+```yaml
+redact_patterns:
+  - "/private_[A-Za-z0-9_-]{20,}"
+  - "(?<=token=)[^&\\s]+"
+```
+
+The first pattern replaces a secret path like `/private_AbC…` completely, the second one keeps `token=` and masks only the value. Patterns are applied to the message text in the given order. An invalid pattern stops the app with an error, so no unmasked messages are sent.
 
 ## Support
 
